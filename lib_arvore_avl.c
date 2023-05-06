@@ -111,13 +111,14 @@ no* rotaciona_esq(arvore *avl, no *x){
     if(x->pai == NULL)/* Verifica se X está na raiz */
         avl->raiz = y; /* Se estiver, então a raiz agora é o y */
     
-    else if(x == x->pai->esq){ /* Verifica se X é o filho da esquerda do pai dele */
+    else if(x == x->pai->esq) /* Verifica se X é o filho da esquerda do pai dele */
         x->pai->esq = y; /* Se for, o filho da esquerda do pai de x recebe y, já que Y é menor que seu avô, mesmo que seja maior que x */
-    }
+    
     else{ /* Se não for filho da esquerda, é porque y será maior que x e maior que o pai de x, logo será filho da direita de seu avô */
         x->pai->dir = y;
         y->pai = x->pai;
     }
+
     y->esq = x; /* O filho da esquerda de y é x, já que y é maior que x */
     x->pai = y; /* O ponteiro para o pai de x recebe y */
 
@@ -129,34 +130,29 @@ no* rotaciona_esq(arvore *avl, no *x){
 /*  Função que rotaciona um nodo passado para a direita
     Retorna o Y, que será a nova raiz */
 no* rotaciona_dir(arvore *avl, no *x){
-    no *y, *aux;
+    no *y = malloc(sizeof(no));
 
 
     y = x->esq; /* Y vira o filho da esquerda de x */
-    aux = y->dir; /* O filho da esquerda de x será tudo que está na direita de y, já que sempre será menor que x*/
+    x->esq = y->dir; /* O filho da esquerda de x será tudo que está na direita de y, já que sempre será menor que x*/
 
     if (y->dir != NULL)
         y->dir->pai = x;
 
-    x->esq = aux;
-    y->dir = x;    
-
     y->pai = x->pai;
-    x->pai = y;
-    
 
     if(x->pai == NULL)
         avl->raiz = y;
 
-    else{
-        if(x == x->pai->esq)
+    else if(x == x->pai->esq)
             y->pai->esq = y;
-
-        else    
-            y->pai->dir = y;
-    } 
+    else{
+        y->pai->dir = y;
+        y->pai = x->pai;
+    }
 
     y->dir = x; /* O filho da direita de y é x, já que y é menor que x */
+    x->pai = y; /* O ponteiro para o pai de x recebe y */
 
     x->altura_nodo = maior_valor(altura_nodo(x->esq), altura_nodo(x->dir)) + 1; /* A altura do nodo x é o maior valor entre a altura o filho da esquerda e o da direita somado a 1 */
     y->altura_nodo = maior_valor(altura_nodo(y->esq), altura_nodo(y->dir)) + 1; /* A altura do nodo y é o maior valor entre a altura o filho da esquerda e o da direita somado a 1 */
@@ -174,7 +170,7 @@ no* rotaciona_dir_esq(arvore *avl, no *x){
 /*  Função que rotaciona se estiver no caso Zig-Zag esquerda-direita
     Retorna o Y, que será a nova raiz */
 no* rotaciona_esq_dir(arvore *avl, no *x){
-    x->esq = rotaciona_esq(avl, x->dir);
+    x->esq = rotaciona_esq(avl, x->esq);
     return rotaciona_dir(avl, x);
 }
 
@@ -229,4 +225,3 @@ no* inserir_avl(arvore *avl, no *raiz, int chave){
 
     return raiz;
 }
-
