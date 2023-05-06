@@ -98,7 +98,7 @@ void imprime_ordem(no *nodo){
 /*  Função que rotaciona um nodo passado para a esquerda
     Retorna o Y, que será a nova raiz */
 no* rotaciona_esq(arvore *avl, no *x){
-    no *y;
+    no *y = malloc(sizeof(no));
 
     y = x->dir; /* Y vira o filho da direita de x*/
     x->dir = y->esq; /* O filho da direita de x será tudo que está na esquerda do y (Filho da direita de x)  */
@@ -106,59 +106,62 @@ no* rotaciona_esq(arvore *avl, no *x){
     if(y->esq != NULL) /* Verifica se Y não tem nenhum filho à esquerda */
         y->esq->pai = x; /* Se tiver, o pai dele se tornará x */
 
-    y->pai = x->pai; /* Pai de X agora é Pai de y */
-
-    if(x->pai == NULL) /* Verifica se X está na raiz */
+    y->pai = x->pai; /* Pai de x agora é Pai de y */
+    
+    if(x->pai == NULL)/* Verifica se X está na raiz */
         avl->raiz = y; /* Se estiver, então a raiz agora é o y */
-
-    else{ /* Se X não está na raiz */
-        if(x == x->pai->esq) /* Verifica se X é o filho da esquerda do pai dele */
-            x->pai->esq = y; /* Se for, o filho da esquerda do pai de x recebe y, já que Y é menor que seu avô, mesmo que seja maior que x */
-
-        else /* Se não for filho da esquerda, é porque y será maior que x e maior que o pai de x, logo será filho da direita de seu avô */
-            x->pai->dir = y;
+    
+    else if(x == x->pai->esq){ /* Verifica se X é o filho da esquerda do pai dele */
+        x->pai->esq = y; /* Se for, o filho da esquerda do pai de x recebe y, já que Y é menor que seu avô, mesmo que seja maior que x */
     }
-
+    else{ /* Se não for filho da esquerda, é porque y será maior que x e maior que o pai de x, logo será filho da direita de seu avô */
+        x->pai->dir = y;
+        y->pai = x->pai;
+    }
     y->esq = x; /* O filho da esquerda de y é x, já que y é maior que x */
     x->pai = y; /* O ponteiro para o pai de x recebe y */
 
     x->altura_nodo = maior_valor(altura_nodo(x->esq), altura_nodo(x->dir)) + 1; /* A altura do nodo x é o maior valor entre a altura o filho da esquerda e o da direita somado a 1 */
     y->altura_nodo = maior_valor(altura_nodo(y->esq), altura_nodo(y->dir)) + 1; /* A altura do nodo y é o maior valor entre a altura o filho da esquerda e o da direita somado a 1 */
-    
     return y; 
 }
 
 /*  Função que rotaciona um nodo passado para a direita
     Retorna o Y, que será a nova raiz */
 no* rotaciona_dir(arvore *avl, no *x){
-    no *y;
+    no *y, *aux;
+
 
     y = x->esq; /* Y vira o filho da esquerda de x */
-    x->esq = y->dir; /* O filho da esquerda de x será tudo que está na direita de y, já que sempre será menor que x*/
+    aux = y->dir; /* O filho da esquerda de x será tudo que está na direita de y, já que sempre será menor que x*/
 
     if (y->dir != NULL)
         y->dir->pai = x;
 
+    x->esq = aux;
+    y->dir = x;    
+
     y->pai = x->pai;
+    x->pai = y;
+    
 
     if(x->pai == NULL)
         avl->raiz = y;
 
     else{
         if(x == x->pai->esq)
-            x->pai->esq = y;
+            y->pai->esq = y;
 
         else    
-            x->pai->dir = y;
-    }
+            y->pai->dir = y;
+    } 
 
     y->dir = x; /* O filho da direita de y é x, já que y é menor que x */
-    x->pai = y; /* O ponteiro para o pai de x recebe y */
 
     x->altura_nodo = maior_valor(altura_nodo(x->esq), altura_nodo(x->dir)) + 1; /* A altura do nodo x é o maior valor entre a altura o filho da esquerda e o da direita somado a 1 */
     y->altura_nodo = maior_valor(altura_nodo(y->esq), altura_nodo(y->dir)) + 1; /* A altura do nodo y é o maior valor entre a altura o filho da esquerda e o da direita somado a 1 */
 
-    return y;
+    return y; 
 }
 
 /*  Função que rotaciona se estiver no caso Zig-Zag direita-esquerda
@@ -178,17 +181,23 @@ no* rotaciona_esq_dir(arvore *avl, no *x){
 no* balancear_avl(arvore *avl, no *raiz){
     int fator_raiz = fator_balanceamento_nodo(raiz);
 
-    if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) >= 0) /* Significa que está desbalanceada para a esquerda e seu filho não está desbalanceado para a direita*/
-        rotaciona_dir(avl, raiz);
+    if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) >= 0){ /* Significa que está desbalanceada para a esquerda e seu filho não está desbalanceado para a direita*/
+        printf("Vai balancear uma vez para direita\n");
+        raiz = rotaciona_dir(avl, raiz);
+    }
+    if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) <= 0){ /* Significa que está desbalanceada para a direita e seu filho está balanceado */
+        printf("Vai balancear uma vez para esquerda\n");
+        raiz = rotaciona_esq(avl, raiz);
+    }
+    if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) < 0){ /* Significa que está desbalanceada para a esquerda e seu filho está desbalanceado para a direita*/
+        printf("Vai balancear esq-dir\n");
+        raiz = rotaciona_esq_dir(avl, raiz);
+    }
 
-    if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) <= 0) /* Significa que está desbalanceada para a direita e seu filho está balanceado */
-        rotaciona_esq(avl, raiz);
-
-    if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) < 0) /* Significa que está desbalanceada para a esquerda e seu filho está desbalanceado para a direita*/
-        rotaciona_esq_dir(avl, raiz);
-
-    if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) > 0) /* Significa que está desbalanceada para a esquerda e seu filho está desbalanceado para a direita*/
-        rotaciona_dir_esq(avl, raiz);
+    if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) > 0){ /* Significa que está desbalanceada para a esquerda e seu filho está desbalanceado para a direita*/
+        printf("Vai dir-esq\n");
+        raiz = rotaciona_dir_esq(avl, raiz);
+    }
 
     return raiz;
 
@@ -199,26 +208,24 @@ no* balancear_avl(arvore *avl, no *raiz){
 no* inserir_avl(arvore *avl, no *raiz, int chave){
     if(raiz == NULL){
         raiz = cria_no(chave);
-        return raiz;
     }
 
     if(raiz->chave > chave){
         raiz->esq = inserir_avl(avl, raiz->esq, chave);
         raiz->esq->pai = raiz;
     }
-    else{
+    else
         if(raiz->chave < chave){
             raiz->dir = inserir_avl(avl, raiz->dir, chave);
             raiz->dir->pai = raiz;
         }
-        else
-            printf("O valor %d já existe e não será acionado à árvore\n", chave);
-    }
 
     raiz->altura_nodo = maior_valor(altura_nodo(raiz->esq), altura_nodo(raiz->dir)) + 1;
 
-    if(precisa_balancear(raiz))
+    if(precisa_balancear(raiz)){
+        printf("Vai balancear para raiz = %d \n", raiz->chave);
         raiz = balancear_avl(avl, raiz);
+    }
 
     return raiz;
 }
