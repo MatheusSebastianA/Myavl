@@ -3,21 +3,29 @@
 #include "lib_arvore_avl.h"
 
 int main(){
-    arvore *avl;
-    avl = cria_arvore_avl();
+    int chave;
+    char opcao;
+    arvore *avl = cria_arvore_avl();
 
+    while(!feof(stdin)){
+        scanf(" %c %d", &opcao, &chave);
 
-    avl->raiz = inserir_avl(avl, avl->raiz, 10);
-    inserir_avl(avl, avl->raiz, 20);
-    inserir_avl(avl, avl->raiz, 30);
-    inserir_avl(avl, avl->raiz, 40);
-    inserir_avl(avl, avl->raiz, 50);
-    inserir_avl(avl, avl->raiz, 45);
-    inserir_avl(avl, avl->raiz, 48);
+        if(opcao == 'i')
+            avl->raiz = insere_avl(avl, avl->raiz, chave);
+        
+        else if(opcao == 'r')
+            avl->raiz = remove_avl(avl, avl->raiz, chave);
 
-    printf("A raiz agora é: %d\n", avl->raiz->chave);
-    imprime_ordem(avl, avl->raiz);
-    printf("\n");
+        else{
+            printf("Argumento %c passado não é válido\n", opcao);
+            return 1;
+        }
+
+    }
+
+    imprime_ordem(avl, avl->raiz, 0);
+    destroi_arvore(avl->raiz);
+    free(avl);
 
     return 0;
 }
