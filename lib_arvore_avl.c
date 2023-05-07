@@ -58,6 +58,8 @@ int fator_balanceamento_nodo(no *nodo){
     return (altura_nodo(nodo->esq) - altura_nodo(nodo->dir));
 }
 
+/*  Função que verifica se um nodo precisa ser balanceado
+    Retrona 1 se precisar e 0 se não precisar */
 int precisa_balancear(no *nodo){
     if (fator_balanceamento_nodo(nodo) > 1 || fator_balanceamento_nodo(nodo) < -1)
         return 1;
@@ -74,9 +76,8 @@ no* busca(no *nodo, int chave){
     if (chave < nodo->chave) /* Verifica se o valor da chave procurada é menor que o valor da chave do nodo atual */
         return busca(nodo->esq, chave); /* Se for, então a busca será feita para o lado esquerdo desse nodo */
 
-    else
-        if (chave > nodo->chave) /* Verifica se o valor da chave procurada é maior que o valor da chave do nodo atual */
-            return busca(nodo->dir, chave); /* Se for, então a busca será feita para o lado direito desse nodo */
+    else if (chave > nodo->chave) /* Verifica se o valor da chave procurada é maior que o valor da chave do nodo atual */
+        return busca(nodo->dir, chave); /* Se for, então a busca será feita para o lado direito desse nodo */
 
     return nodo; /* Se chegar aqui é porque a chave procurada é igual a chave do nodo atual, e retorna esse nodo */
 
@@ -84,13 +85,16 @@ no* busca(no *nodo, int chave){
 }
 
 /*  Função que imprime os valores em ordem */
-void imprime_ordem(no *nodo){
+void imprime_ordem(arvore *avl, no *nodo, int nivel){
+    if(avl->raiz == NULL)
+        return;
+
     if(nodo == NULL)
         return;
 
-    imprime_ordem(nodo->esq);
-    printf("%d ", nodo->chave);
-    imprime_ordem(nodo->dir);
+    imprime_ordem(avl, nodo->esq, nivel + 1);
+    printf("%d,%d\n", nodo->chave, nivel);
+    imprime_ordem(avl, nodo->dir, nivel + 1);
 
     return;
 }
@@ -98,7 +102,7 @@ void imprime_ordem(no *nodo){
 /*  Função que rotaciona um nodo passado para a esquerda
     Retorna o Y, que será a nova raiz */
 no* rotaciona_esq(arvore *avl, no *x){
-    no *y = malloc(sizeof(no));
+    no *y;
 
     y = x->dir; /* Y vira o filho da direita de x*/
     x->dir = y->esq; /* O filho da direita de x será tudo que está na esquerda do y (Filho da direita de x)  */
@@ -130,8 +134,7 @@ no* rotaciona_esq(arvore *avl, no *x){
 /*  Função que rotaciona um nodo passado para a direita
     Retorna o Y, que será a nova raiz */
 no* rotaciona_dir(arvore *avl, no *x){
-    no *y = malloc(sizeof(no));
-
+    no *y;
 
     y = x->esq; /* Y vira o filho da esquerda de x */
     x->esq = y->dir; /* O filho da esquerda de x será tudo que está na direita de y, já que sempre será menor que x*/
@@ -145,7 +148,8 @@ no* rotaciona_dir(arvore *avl, no *x){
         avl->raiz = y;
 
     else if(x == x->pai->esq)
-            y->pai->esq = y;
+        y->pai->esq = y;
+
     else{
         y->pai->dir = y;
         y->pai = x->pai;
@@ -174,26 +178,20 @@ no* rotaciona_esq_dir(arvore *avl, no *x){
     return rotaciona_dir(avl, x);
 }
 
-no* balancear_avl(arvore *avl, no *raiz){
+no* balancea_avl(arvore *avl, no *raiz){
     int fator_raiz = fator_balanceamento_nodo(raiz);
 
-    if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) >= 0){ /* Significa que está desbalanceada para a esquerda e seu filho não está desbalanceado para a direita*/
-        printf("Vai balancear uma vez para direita\n");
+    if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) >= 0) /* Significa que está desbalanceada para a esquerda e seu filho não está desbalanceado para a direita*/
         raiz = rotaciona_dir(avl, raiz);
-    }
-    if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) <= 0){ /* Significa que está desbalanceada para a direita e seu filho está balanceado */
-        printf("Vai balancear uma vez para esquerda\n");
+    
+    else if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) <= 0) /* Significa que está desbalanceada para a direita e seu filho está balanceado */
         raiz = rotaciona_esq(avl, raiz);
-    }
-    if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) < 0){ /* Significa que está desbalanceada para a esquerda e seu filho está desbalanceado para a direita*/
-        printf("Vai balancear esq-dir\n");
+    
+    else if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) < 0) /* Significa que está desbalanceada para a esquerda e seu filho está desbalanceado para a direita*/
         raiz = rotaciona_esq_dir(avl, raiz);
-    }
-
-    if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) > 0){ /* Significa que está desbalanceada para a esquerda e seu filho está desbalanceado para a direita*/
-        printf("Vai dir-esq\n");
+    
+    else if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) > 0) /* Significa que está desbalanceada para a esquerda e seu filho está desbalanceado para a direita*/
         raiz = rotaciona_dir_esq(avl, raiz);
-    }
 
     return raiz;
 
@@ -201,27 +199,91 @@ no* balancear_avl(arvore *avl, no *raiz){
 
 /*  Função que insere a chave na raiz da árvore ou de alguma subárvore
     Retorna o nodo que foi adicionado */
-no* inserir_avl(arvore *avl, no *raiz, int chave){
-    if(raiz == NULL){
+no* insere_avl(arvore *avl, no *raiz, int chave){
+    if(raiz == NULL)
         raiz = cria_no(chave);
-    }
 
-    if(raiz->chave > chave){
-        raiz->esq = inserir_avl(avl, raiz->esq, chave);
+    if(raiz->chave > chave){ /* Verifica se o valor da raiz é maior que o valor da chave a ser inserida */
+        raiz->esq = insere_avl(avl, raiz->esq, chave); /* Se for, a chave tem que ser inseirda à esquerda dessa raiz */
         raiz->esq->pai = raiz;
     }
-    else
-        if(raiz->chave < chave){
-            raiz->dir = inserir_avl(avl, raiz->dir, chave);
-            raiz->dir->pai = raiz;
-        }
 
-    raiz->altura_nodo = maior_valor(altura_nodo(raiz->esq), altura_nodo(raiz->dir)) + 1;
-
-    if(precisa_balancear(raiz)){
-        printf("Vai balancear para raiz = %d \n", raiz->chave);
-        raiz = balancear_avl(avl, raiz);
+    if(raiz->chave < chave){ /* Verifica se o valor da raiz é menor que o valor da chave a ser inserida */
+        raiz->dir = insere_avl(avl, raiz->dir, chave); /* Se for, a chave tem que ser inseirda à direita dessa raiz */
+        raiz->dir->pai = raiz;
     }
 
+    raiz->altura_nodo = maior_valor(altura_nodo(raiz->esq), altura_nodo(raiz->dir)) + 1; /* Atualiza o valor da altura da raiz atual */
+
+    if(precisa_balancear(raiz)){ /* Verifica se a árvore precisa ser balanceada */
+        raiz = balancea_avl(avl, raiz);
+    }
+
+    avl->altura_arvore = maior_valor(avl->altura_arvore, raiz->altura_nodo);
     return raiz;
+}
+
+/*  Função que remove a chave na raiz da árvore ou de alguma subárvore
+    Retorna o nodo que foi removido */
+no* remove_avl(arvore *avl, no *raiz, int chave){
+    no* aux;
+
+    if (raiz == NULL) /* Significa que não foi encontrado a chave passada */
+        return NULL;
+
+    if (raiz->chave == chave){
+        if(raiz->dir == NULL && raiz->esq == NULL){ /* Significa que a chave a ser retirada não tem nenhum filho */
+            free(raiz);
+            return NULL;
+        }
+
+        else if(raiz->dir != NULL && raiz->esq != NULL){ /* Significa que a chave a ser retirada tem dois filhos */
+            aux = raiz->esq; /* Auxiliar para pegar o filho da esquerda do nodo a ser removido */
+            while (aux->dir != NULL) /* Looping para pegar o antecessor do nodo a ser removido */
+                aux = aux->dir;
+            raiz->chave = aux->chave; /* Troca o valor da chave pelo valor de seu sucessor */
+            aux->chave = chave; /* Troca o o sucessor da chave pelo valor da chave */
+            raiz->esq = remove_avl(avl, raiz->esq, chave);
+            return raiz;
+        }
+
+        else{ /* Significa que a chave a ser retirada tem apenas um filho */
+            if(raiz->esq != NULL)
+                aux = raiz->esq;
+            else
+                aux = raiz->dir;
+
+            free(raiz);           
+            return aux;
+        }
+    }
+    
+    else{ /* Significa que o valor da chave não foi encontrado ainda  */
+        if(raiz->chave > chave) 
+            raiz->esq = remove_avl(avl, raiz->esq, chave); /* Vai procurar o valor na esquerda dessa raiz  */
+
+        else
+            raiz->dir = remove_avl(avl, raiz->dir, chave); /* Vai procurar o valor na direita dessa raiz  */
+    }
+
+    raiz->altura_nodo = maior_valor(altura_nodo(raiz->esq), altura_nodo(raiz->dir)) + 1; /* Atualiza o valor da altura da raiz atual */
+
+    if(precisa_balancear(raiz)) /* Verifica se a árvore precisa ser balanceada */
+        raiz = balancea_avl(avl, raiz);
+
+    avl->altura_arvore = maior_valor(avl->altura_arvore, raiz->altura_nodo);
+    return raiz;
+}
+
+/*  Função que vai desalocar todos os nodos da árvore avl
+    Não retorna nada */
+void destroi_arvore(no *raiz){
+    if(raiz == NULL)
+        return;
+
+    destroi_arvore(raiz->esq);
+    destroi_arvore(raiz->dir);
+    free(raiz);
+
+    return;
 }
