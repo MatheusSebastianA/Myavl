@@ -24,7 +24,7 @@ int maior_valor(int x, int y);
 
 no* busca(no *nodo, int chave);
 
-void imprime_ordem(arvore *avl, no *nodo);
+void imprime_ordem(arvore *avl, no *nodo, int nivel);
 
 int fator_balanceamento_nodo(no *nodo);
 
@@ -38,10 +38,12 @@ no* rotaciona_dir_esq(arvore *avl, no *x);
 
 no* rotaciona_esq_dir(arvore *avl, no *x);
 
-no* balancear_avl(arvore *avl, no *raiz);
+no* balancea_avl(arvore *avl, no *raiz);
 
-no* inserir_avl(arvore *avl, no *raiz, int chave);
+no* insere_avl(arvore *avl, no *raiz, int chave);
 
-no* remover_avl(arvore *avl, no *raiz, int chave);
+no* remove_avl(arvore *avl, no *raiz, int chave);
+
+void destroi_arvore(no *raiz);
 
 #endif /* lib_arvore_avl.h*/
