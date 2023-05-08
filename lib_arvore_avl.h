@@ -20,6 +20,8 @@ no* cria_no(int chave);
 
 int altura_nodo(no *nodo);
 
+int altura_arvore(no *nodo);
+
 int maior_valor(int x, int y);
 
 no* busca(no *nodo, int chave);
