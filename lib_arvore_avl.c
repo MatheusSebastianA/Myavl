@@ -196,16 +196,16 @@ no* rotaciona_esq_dir(arvore *avl, no *x){
 no* balancea_avl(arvore *avl, no *raiz){
     int fator_raiz = fator_balanceamento_nodo(raiz);
 
-    if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) >= 0) /* Significa que está desbalanceada para a esquerda e seu filho não está desbalanceado para a direita*/
+    if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) >= 0) /* Significa que está desbalanceada para a esquerda e seu filho esquerdo não tem mais filhos para a direita*/
         raiz = rotaciona_dir(avl, raiz);
     
-    else if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) <= 0) /* Significa que está desbalanceada para a direita e seu filho está balanceado */
+    else if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) <= 0) /* Significa que está desbalanceada para a direita e seu filho direito não tem mais filhos para a esquerda */
         raiz = rotaciona_esq(avl, raiz);
     
-    else if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) < 0) /* Significa que está desbalanceada para a esquerda e seu filho está desbalanceado para a direita*/
+    else if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) < 0) /* Significa que está desbalanceada para a esquerda e seu filho esquerdo tem mais filhos para a direita*/
         raiz = rotaciona_esq_dir(avl, raiz);
     
-    else if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) > 0) /* Significa que está desbalanceada para a esquerda e seu filho está desbalanceado para a direita*/
+    else if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) > 0) /* Significa que está desbalanceada para a direita e seu filho direito tem mais filhos para a esquerda*/
         raiz = rotaciona_dir_esq(avl, raiz);
 
     return raiz;
