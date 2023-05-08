@@ -209,7 +209,6 @@ no* balancea_avl(arvore *avl, no *raiz){
         raiz = rotaciona_dir_esq(avl, raiz);
 
     return raiz;
-
 }
 
 /*  Função que insere a chave na raiz da árvore ou de alguma subárvore
