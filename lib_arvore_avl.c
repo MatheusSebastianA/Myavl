@@ -84,6 +84,23 @@ no* busca(no *nodo, int chave){
 
 }
 
+/*  Função que atualiza o valor da altura da árvore */
+int altura_arvore(no *nodo){
+    int esq, dir;
+
+    if(nodo == NULL)
+        return -1;
+    else{
+        esq = altura_nodo(nodo->esq);
+        dir = altura_nodo(nodo->dir);
+
+        if(esq > dir)
+            return esq + 1;
+        else
+            return dir + 1;
+    }
+}
+
 /*  Função que imprime os valores em ordem */
 void imprime_ordem(arvore *avl, no *nodo, int nivel){
     if(avl->raiz == NULL)
@@ -218,8 +235,9 @@ no* insere_avl(arvore *avl, no *raiz, int chave){
     if(precisa_balancear(raiz)){ /* Verifica se a árvore precisa ser balanceada */
         raiz = balancea_avl(avl, raiz);
     }
+    
+    avl->altura_arvore = altura_arvore(avl->raiz);
 
-    avl->altura_arvore = maior_valor(avl->altura_arvore, raiz->altura_nodo);
     return raiz;
 }
 
@@ -271,7 +289,8 @@ no* remove_avl(arvore *avl, no *raiz, int chave){
     if(precisa_balancear(raiz)) /* Verifica se a árvore precisa ser balanceada */
         raiz = balancea_avl(avl, raiz);
 
-    avl->altura_arvore = maior_valor(avl->altura_arvore, raiz->altura_nodo);
+    avl->altura_arvore = altura_arvore(avl->raiz);
+
     return raiz;
 }
 
