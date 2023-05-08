@@ -42,6 +42,23 @@ int altura_nodo(no *nodo){
     return nodo->altura_nodo;
 }
 
+/*  Função que atualiza o valor da altura da árvore */
+int altura_arvore(no *nodo){
+    int esq, dir;
+
+    if(nodo == NULL)
+        return -1;
+    else{
+        esq = altura_nodo(nodo->esq);
+        dir = altura_nodo(nodo->dir);
+
+        if(esq > dir)
+            return esq + 1;
+        else
+            return dir + 1;
+    }
+}
+
 int maior_valor(int a, int b){
     if(a > b)
         return a;
@@ -82,23 +99,6 @@ no* busca(no *nodo, int chave){
     return nodo; /* Se chegar aqui é porque a chave procurada é igual a chave do nodo atual, e retorna esse nodo */
 
 
-}
-
-/*  Função que atualiza o valor da altura da árvore */
-int altura_arvore(no *nodo){
-    int esq, dir;
-
-    if(nodo == NULL)
-        return -1;
-    else{
-        esq = altura_nodo(nodo->esq);
-        dir = altura_nodo(nodo->dir);
-
-        if(esq > dir)
-            return esq + 1;
-        else
-            return dir + 1;
-    }
 }
 
 /*  Função que imprime os valores em ordem */
