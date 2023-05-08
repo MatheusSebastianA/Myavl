@@ -66,6 +66,36 @@ int maior_valor(int a, int b){
     return b;
 }
 
+/*  Função que procura uma chave passada na árvore
+    Retorna qual é o nodo encontrado que apresenta aquela chave ou NULL caso não exite a chave procurada */
+no* busca(no *nodo, int chave){
+    if (nodo == NULL)
+        return cria_no(chave); /* Significa que não foi encontrado nenhuma chave, então será criado um novo nodo */
+
+    if (chave < nodo->chave) /* Verifica se o valor da chave procurada é menor que o valor da chave do nodo atual */
+        return busca(nodo->esq, chave); /* Se for, então a busca será feita para o lado esquerdo desse nodo */
+
+    else if (chave > nodo->chave) /* Verifica se o valor da chave procurada é maior que o valor da chave do nodo atual */
+        return busca(nodo->dir, chave); /* Se for, então a busca será feita para o lado direito desse nodo */
+
+    return nodo; /* Se chegar aqui é porque a chave procurada é igual a chave do nodo atual, e retorna esse nodo */
+}
+
+/*  Função que imprime os valores em ordem */
+void imprime_ordem(arvore *avl, no *nodo, int nivel){
+    if(avl->raiz == NULL)
+        return;
+
+    if(nodo == NULL)
+        return;
+
+    imprime_ordem(avl, nodo->esq, nivel + 1);
+    printf("%d,%d\n", nodo->chave, nivel);
+    imprime_ordem(avl, nodo->dir, nivel + 1);
+
+    return;
+}
+
 /*  Função que calcula o valor de balanceamento de um nodo
     Retrona esse valor ou 0 se o ponteiro for nulo */
 int fator_balanceamento_nodo(no *nodo){
@@ -82,38 +112,6 @@ int precisa_balancear(no *nodo){
         return 1;
 
     return 0;
-}
-
-/*  Função que procura uma chave passada na árvore
-    Retorna qual é o nodo encontrado que apresenta aquela chave ou NULL caso não exite a chave procurada */
-no* busca(no *nodo, int chave){
-    if (nodo == NULL)
-        return cria_no(chave); /* Significa que não foi encontrado nenhuma chave, então será criado um novo nodo */
-
-    if (chave < nodo->chave) /* Verifica se o valor da chave procurada é menor que o valor da chave do nodo atual */
-        return busca(nodo->esq, chave); /* Se for, então a busca será feita para o lado esquerdo desse nodo */
-
-    else if (chave > nodo->chave) /* Verifica se o valor da chave procurada é maior que o valor da chave do nodo atual */
-        return busca(nodo->dir, chave); /* Se for, então a busca será feita para o lado direito desse nodo */
-
-    return nodo; /* Se chegar aqui é porque a chave procurada é igual a chave do nodo atual, e retorna esse nodo */
-
-
-}
-
-/*  Função que imprime os valores em ordem */
-void imprime_ordem(arvore *avl, no *nodo, int nivel){
-    if(avl->raiz == NULL)
-        return;
-
-    if(nodo == NULL)
-        return;
-
-    imprime_ordem(avl, nodo->esq, nivel + 1);
-    printf("%d,%d\n", nodo->chave, nivel);
-    imprime_ordem(avl, nodo->dir, nivel + 1);
-
-    return;
 }
 
 /*  Função que rotaciona um nodo passado para a esquerda
