@@ -78,7 +78,7 @@ no* busca(no *nodo, int chave){
     else if (chave > nodo->chave) /* Verifica se o valor da chave procurada é maior que o valor da chave do nodo atual */
         return busca(nodo->dir, chave); /* Se for, então a busca será feita para o lado direito desse nodo */
 
-    return nodo; /* Se chegar aqui é porque a chave procurada é igual a chave do nodo atual, e retorna esse nodo */
+    return nodo;
 }
 
 /*  Função que imprime os valores em ordem */
