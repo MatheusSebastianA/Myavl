@@ -70,7 +70,7 @@ int maior_valor(int a, int b){
     Retorna qual é o nodo encontrado que apresenta aquela chave ou NULL caso não exite a chave procurada */
 no* busca(no *nodo, int chave){
     if (nodo == NULL)
-        return cria_no(chave); /* Significa que não foi encontrado nenhuma chave, então será criado um novo nodo */
+        return NULL; /* Significa que não foi encontrado nenhuma chave, então retorna null */
 
     if (chave < nodo->chave) /* Verifica se o valor da chave procurada é menor que o valor da chave do nodo atual */
         return busca(nodo->esq, chave); /* Se for, então a busca será feita para o lado esquerdo desse nodo */
@@ -89,9 +89,9 @@ void imprime_ordem(arvore *avl, no *nodo, int nivel){
     if(nodo == NULL)
         return;
 
-    imprime_ordem(avl, nodo->esq, nivel + 1);
-    printf("%d,%d\n", nodo->chave, nivel);
-    imprime_ordem(avl, nodo->dir, nivel + 1);
+    imprime_ordem(avl, nodo->esq, nivel + 1); /* Chamada recursiva para o filho da esquerda */
+    printf("%d,%d\n", nodo->chave, nivel); /* Impressão do nodo atual e seu nível na árvore */
+    imprime_ordem(avl, nodo->dir, nivel + 1); /* Chamada recursiva para o filho da direita */
 
     return;
 }
@@ -102,7 +102,7 @@ int fator_balanceamento_nodo(no *nodo){
     if(nodo == NULL)
         return 0;
 
-    return (altura_nodo(nodo->esq) - altura_nodo(nodo->dir));
+    return (altura_nodo(nodo->esq) - altura_nodo(nodo->dir)); /* Fator de balanceamento é a altura do filho esquerdo - altura do filho direito */
 }
 
 /*  Função que verifica se um nodo precisa ser balanceado
@@ -154,18 +154,18 @@ no* rotaciona_dir(arvore *avl, no *x){
     y = x->esq; /* Y vira o filho da esquerda de x */
     x->esq = y->dir; /* O filho da esquerda de x será tudo que está na direita de y, já que sempre será menor que x*/
 
-    if (y->dir != NULL)
-        y->dir->pai = x;
+    if (y->dir != NULL) /* Verifica se Y não tem nenhum filho à direita */
+        y->dir->pai = x; /* Se tiver, o pai dele se tornará x */
 
-    y->pai = x->pai;
+    y->pai = x->pai; /* Pai de x agora é Pai de y */
 
-    if(x->pai == NULL)
-        avl->raiz = y;
+    if(x->pai == NULL) /* Verifica se X está na raiz */
+        avl->raiz = y; /* Se estiver, então a raiz agora é o y */
 
-    else if(x == x->pai->esq)
-        y->pai->esq = y;
+    else if(x == x->pai->esq) /* Verifica se X é o filho da esquerda do pai dele */
+        y->pai->esq = y; /* Se for, o filho da esquerda do pai de x recebe y, já que Y é menor que seu avô, mesmo que seja maior que x */
 
-    else{
+    else{ /* Se não for filho da esquerda, é porque y será maior que x e maior que o pai de x, logo será filho da direita de seu avô */
         y->pai->dir = y;
         y->pai = x->pai;
     }
@@ -196,10 +196,10 @@ no* rotaciona_esq_dir(arvore *avl, no *x){
 no* balancea_avl(arvore *avl, no *raiz){
     int fator_raiz = fator_balanceamento_nodo(raiz);
 
-    if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) >= 0) /* Significa que está desbalanceada para a esquerda e seu filho esquerdo não tem mais filhos para a direita*/
+    if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) >= 0) /* Significa que está desbalanceada para a esquerda e seu filho esquerdo não tem mais filhos para a direita que para a esquerda*/
         raiz = rotaciona_dir(avl, raiz);
     
-    else if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) <= 0) /* Significa que está desbalanceada para a direita e seu filho direito não tem mais filhos para a esquerda */
+    else if (fator_raiz < -1 && fator_balanceamento_nodo(raiz->dir) <= 0) /* Significa que está desbalanceada para a direita e seu filho direito não tem mais filhos para a esquerda que para a direita */
         raiz = rotaciona_esq(avl, raiz);
     
     else if (fator_raiz > 1 && fator_balanceamento_nodo(raiz->esq) < 0) /* Significa que está desbalanceada para a esquerda e seu filho esquerdo tem mais filhos para a direita*/
