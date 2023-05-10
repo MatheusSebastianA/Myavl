@@ -29,8 +29,8 @@ Implementação:
     . O fator de balanceamento do nodo verificado é maior que 1 (está desbalanceado para a esquerda) e seu filho esquerdo tem balanceamento menor que 0 (não tem mais filhos para a esquerda que para direita): Faz uma rotação a esquerda desse filho a esquerda que está "desbalanceado" para a direita e uma rotação a direita do nodo desbalanceado.
     . O fator de balanceamento do nodo verificado é menor que -1 (está desbalanceado para a direita) e seu filho esquerdo tem balanceamento maior que 0 (não tem mais filhos para a direita que para esquerda): Faz uma rotação a direita desse filho direito que está "desbalanceado" para a direita e uma rotação a esquerda do nodo desbalanceado.
 
-  A função de remoção é feita recursivamente, a qual apresenta 3 possibilidades caso a chave seja exista e possa ser removida.
-  
+  A função de remoção é feita recursivamente, a qual apresenta 3 possibilidades caso a chave exista para poder ser removida:
+      
       . Nodo com a chave apresenta nenhum filho: Apenas libera esse nodo;
       . Nodo com a chave apresenta um filho: Troca o nodo pelo seu único filho e libera o nodo trocado; 
       . Nodo com a chave apresenta dois filhos: Pega a chave do seu antecessor e troca pela chave do nodo com a chave, libera o nodo que era seu antecessor
